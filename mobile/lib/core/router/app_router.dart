@@ -5,6 +5,10 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/groups/presentation/screens/groups_screen.dart';
+import '../../features/groups/presentation/screens/group_detail_screen.dart';
+import '../../features/messages/presentation/screens/messages_screen.dart';
+import '../../features/pet/presentation/screens/decorations_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -34,6 +38,35 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+
+      // Groups routes
+      GoRoute(
+        path: '/groups',
+        name: 'groups',
+        builder: (context, state) => const GroupsScreen(),
+      ),
+      GoRoute(
+        path: '/groups/:id',
+        name: 'group-detail',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return GroupDetailScreen(groupId: id);
+        },
+      ),
+
+      // Messages route
+      GoRoute(
+        path: '/messages',
+        name: 'messages',
+        builder: (context, state) => const MessagesScreen(),
+      ),
+
+      // Decorations route
+      GoRoute(
+        path: '/decorations',
+        name: 'decorations',
+        builder: (context, state) => const DecorationsScreen(),
       ),
     ],
   );

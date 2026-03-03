@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/group_provider.dart';
 import '../../data/models/group_models.dart';
+import 'group_detail_screen.dart';
 
 class GroupsScreen extends ConsumerStatefulWidget {
   const GroupsScreen({super.key});
@@ -282,7 +283,12 @@ class _GroupCard extends StatelessWidget {
           ],
         ),
         onTap: () {
-          // TODO: Navigate to group detail screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GroupDetailScreen(groupId: group.id),
+            ),
+          );
         },
       ),
     );
