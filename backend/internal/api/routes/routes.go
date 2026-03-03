@@ -34,9 +34,13 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, redis *redis.Client) {
 
 	// Initialize services
 	authService := services.NewAuthService(userRepo, cfg)
+	petService := services.NewPetService(petRepo, db)
+	checkInService := services.NewCheckInService(checkInRepo, petService)
 
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService)
+	checkInHandler := handlers.NewCheckInHandler(checkInService)
+	petHandler := handlers.NewPetHandler(petService)
 
 	// API v1 routes
 	v1 := router.Group("/api/v1")
@@ -66,28 +70,20 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, redis *redis.Client) {
 			// Check-in routes
 			checkins := protected.Group("/check-ins")
 			{
-				checkins.POST("/", func(c *gin.Context) {
-					c.JSON(200, gin.H{"message": "Create check-in - coming soon"})
-				})
-				checkins.GET("/", func(c *gin.Context) {
-					c.JSON(200, gin.H{"message": "Get check-ins - coming soon"})
-				})
+				checkins.POST("/", checkInHandler.Create)
+				checkins.GET("/", checkInHandler.GetList)
+				checkins.GET("/today", checkInHandler.GetToday)
+				checkins.GET("/stats", checkInHandler.GetStats)
 			}
 
 			// Pet routes
 			pet := protected.Group("/pet")
 			{
-				pet.GET("/", func(c *gin.Context) {
-					c.JSON(200, gin.H{"message": "Get pet - coming soon"})
-				})
-				pet.POST("/", func(c *gin.Context) {
-					c.JSON(200, gin.H{"message": "Create pet - coming soon"})
-				})
+				pet.GET("/", petHandler.Get)
+				pet.PUT("/", petHandler.Update)
+				pet.GET("/decorations", petHandler.GetDecorations)
+				pet.POST("/decorations/:id/equip", petHandler.EquipDecoration)
 			}
 		}
 	}
-
-	// Suppress unused variable warnings
-	_ = checkInRepo
-	_ = petRepo
 }

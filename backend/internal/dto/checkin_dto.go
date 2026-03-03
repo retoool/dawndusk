@@ -33,3 +33,10 @@ type CheckInStatsResponse struct {
 	AverageTimeDiff   float64 `json:"average_time_diff"`
 	OnTimePercentage  float64 `json:"on_time_percentage"`
 }
+
+type TodayCheckInsResponse struct {
+	WakeCheckIn  *CheckInResponse `json:"wake_check_in,omitempty"`
+	SleepCheckIn *CheckInResponse `json:"sleep_check_in,omitempty"`
+	HasWake      bool             `json:"has_wake"`
+	HasSleep     bool             `json:"has_sleep"`
+}

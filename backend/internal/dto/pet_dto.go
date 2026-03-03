@@ -24,3 +24,16 @@ type PetResponse struct {
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at"`
 }
+
+type DecorationResponse struct {
+	ID           string    `json:"id"`
+	Name         string    `json:"name"`
+	Description  string    `json:"description"`
+	Category     string    `json:"category"`
+	ImageURL     string    `json:"image_url"`
+	UnlockLevel  int       `json:"unlock_level"`
+	Rarity       string    `json:"rarity"`
+	IsOwned      bool      `json:"is_owned"`
+	IsEquipped   bool      `json:"is_equipped"`
+	CreatedAt    time.Time `json:"created_at"`
+}
