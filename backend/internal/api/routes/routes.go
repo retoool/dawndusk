@@ -35,6 +35,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, redis *redis.Client) {
 	groupRepo := repositories.NewGroupRepository(db)
 	decorationRepo := repositories.NewDecorationRepository(db)
 	messageRepo := repositories.NewMessageRepository(db)
+	friendshipRepo := repositories.NewFriendshipRepository(db)
 
 	// Initialize services
 	authService := services.NewAuthService(userRepo, cfg)
@@ -44,6 +45,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, redis *redis.Client) {
 	groupService := services.NewGroupService(groupRepo)
 	decorationService := services.NewDecorationService(decorationRepo, petRepo)
 	messageService := services.NewMessageService(messageRepo, userRepo)
+	friendshipService := services.NewFriendshipService(friendshipRepo, userRepo)
 
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService)
@@ -54,6 +56,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, redis *redis.Client) {
 	groupHandler := handlers.NewGroupHandler(groupService)
 	decorationHandler := handlers.NewDecorationHandler(decorationService)
 	messageHandler := handlers.NewMessageHandler(messageService)
+	friendshipHandler := handlers.NewFriendshipHandler(friendshipService)
 
 	// API v1 routes
 	v1 := router.Group("/api/v1")
@@ -134,6 +137,18 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, redis *redis.Client) {
 				messages.POST("/conversation/:userId/read", messageHandler.MarkConversationAsRead)
 				messages.POST("/:id/read", messageHandler.MarkAsRead)
 				messages.DELETE("/:id", messageHandler.DeleteMessage)
+			}
+
+			// Friendship routes
+			friends := protected.Group("/friends")
+			{
+				friends.GET("/", friendshipHandler.GetFriends)
+				friends.POST("/request", friendshipHandler.SendFriendRequest)
+				friends.GET("/requests/pending", friendshipHandler.GetPendingRequests)
+				friends.GET("/requests/sent", friendshipHandler.GetSentRequests)
+				friends.POST("/request/:id/accept", friendshipHandler.AcceptFriendRequest)
+				friends.POST("/request/:id/reject", friendshipHandler.RejectFriendRequest)
+				friends.DELETE("/:id", friendshipHandler.RemoveFriend)
 			}
 		}
 	}

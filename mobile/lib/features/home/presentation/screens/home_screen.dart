@@ -488,6 +488,15 @@ class _ProfileTab extends ConsumerWidget {
                 ),
                 const Divider(height: 1),
                 ListTile(
+                  leading: const Icon(Icons.people),
+                  title: const Text('好友'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    context.push('/friends');
+                  },
+                ),
+                const Divider(height: 1),
+                ListTile(
                   leading: const Icon(Icons.chat_bubble),
                   title: const Text('消息'),
                   trailing: const Icon(Icons.chevron_right),

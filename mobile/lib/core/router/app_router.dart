@@ -9,6 +9,7 @@ import '../../features/groups/presentation/screens/groups_screen.dart';
 import '../../features/groups/presentation/screens/group_detail_screen.dart';
 import '../../features/messages/presentation/screens/messages_screen.dart';
 import '../../features/pet/presentation/screens/decorations_screen.dart';
+import '../../features/friends/presentation/screens/friends_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -67,6 +68,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/decorations',
         name: 'decorations',
         builder: (context, state) => const DecorationsScreen(),
+      ),
+
+      // Friends route
+      GoRoute(
+        path: '/friends',
+        name: 'friends',
+        builder: (context, state) => const FriendsScreen(),
       ),
     ],
   );
