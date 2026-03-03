@@ -7,12 +7,14 @@ import (
 
 // CORS middleware configures CORS settings
 func CORS() gin.HandlerFunc {
-	config := cors.DefaultConfig()
-	config.AllowAllOrigins = true
-	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"}
-	config.AllowHeaders = []string{"Origin", "Content-Type", "Authorization", "Accept", "X-Requested-With"}
-	config.ExposeHeaders = []string{"Content-Length", "Authorization"}
-	config.AllowCredentials = false
+	config := cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "X-Requested-With"},
+		ExposeHeaders:    []string{"Content-Length", "Authorization"},
+		AllowCredentials: false,
+		MaxAge:           12 * 3600, // 12 hours
+	}
 
 	return cors.New(config)
 }

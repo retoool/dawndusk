@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/auth_models.dart';
 import '../../data/services/auth_service.dart';
+import '../../../../core/storage/secure_storage.dart';
 
 // Auth state
 class AuthState {
@@ -41,13 +42,36 @@ class AuthState {
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthService _authService;
 
-  AuthNotifier(this._authService) : super(const AuthState());
+  AuthNotifier(this._authService) : super(const AuthState()) {
+    _loadSavedAuth();
+  }
+
+  // Load saved authentication on init
+  Future<void> _loadSavedAuth() async {
+    final accessToken = await SecureStorage.getAccessToken();
+    final refreshToken = await SecureStorage.getRefreshToken();
+
+    if (accessToken != null && refreshToken != null) {
+      state = state.copyWith(
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      );
+    }
+  }
 
   Future<void> register(String username, String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
       final response = await _authService.register(username, email, password);
+
+      // Save tokens to secure storage
+      await SecureStorage.saveTokens(
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+        userId: response.user.id,
+      );
+
       state = AuthState(
         user: response.user,
         accessToken: response.accessToken,
@@ -68,6 +92,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     try {
       final response = await _authService.login(email, password);
+
+      // Save tokens to secure storage
+      await SecureStorage.saveTokens(
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+        userId: response.user.id,
+      );
+
       state = AuthState(
         user: response.user,
         accessToken: response.accessToken,
@@ -87,6 +119,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       await _authService.logout();
     } finally {
+      // Clear tokens from secure storage
+      await SecureStorage.clearTokens();
       state = const AuthState();
     }
   }

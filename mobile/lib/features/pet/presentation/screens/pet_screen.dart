@@ -36,9 +36,41 @@ class _PetScreenState extends ConsumerState<PetScreen> {
       ),
       body: state.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : state.pet == null
-              ? const Center(child: Text('加载中...'))
-              : RefreshIndicator(
+          : state.error != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                      const SizedBox(height: 16),
+                      Text(
+                        '加载失败',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Text(
+                          state.error!,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          ref.read(petProvider.notifier).loadPet();
+                          ref.read(petProvider.notifier).loadDecorations();
+                        },
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('重试'),
+                      ),
+                    ],
+                  ),
+                )
+              : state.pet == null
+                  ? const Center(child: Text('加载中...'))
+                  : RefreshIndicator(
                   onRefresh: () async {
                     await ref.read(petProvider.notifier).loadPet();
                     await ref.read(petProvider.notifier).loadDecorations();

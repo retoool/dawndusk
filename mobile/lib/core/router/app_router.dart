@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/groups/presentation/screens/groups_screen.dart';
@@ -12,8 +13,27 @@ import '../../features/pet/presentation/screens/decorations_screen.dart';
 import '../../features/friends/presentation/screens/friends_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authProvider);
+
   return GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/',
+    redirect: (context, state) {
+      final isAuthenticated = authState.accessToken != null;
+      final isAuthRoute = state.matchedLocation == '/login' ||
+                         state.matchedLocation == '/register';
+
+      // If not authenticated and trying to access protected route, redirect to login
+      if (!isAuthenticated && !isAuthRoute) {
+        return '/login';
+      }
+
+      // If authenticated and on auth route, redirect to home
+      if (isAuthenticated && isAuthRoute) {
+        return '/';
+      }
+
+      return null; // No redirect needed
+    },
     routes: [
       // Auth routes
       GoRoute(
