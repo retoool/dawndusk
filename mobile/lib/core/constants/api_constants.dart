@@ -20,6 +20,9 @@ class ApiConstants {
   static const String pet = '/pet';
   static const String petDecorations = '/pet/decorations';
 
+  // Sleep schedule endpoints
+  static const String sleepSchedule = '/sleep-schedule';
+
   // Group endpoints
   static const String groups = '/groups';
 

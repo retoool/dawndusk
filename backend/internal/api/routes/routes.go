@@ -31,16 +31,29 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, redis *redis.Client) {
 	userRepo := repositories.NewUserRepository(db)
 	checkInRepo := repositories.NewCheckInRepository(db)
 	petRepo := repositories.NewPetRepository(db)
+	sleepScheduleRepo := repositories.NewSleepScheduleRepository(db)
+	groupRepo := repositories.NewGroupRepository(db)
+	decorationRepo := repositories.NewDecorationRepository(db)
+	messageRepo := repositories.NewMessageRepository(db)
 
 	// Initialize services
 	authService := services.NewAuthService(userRepo, cfg)
 	petService := services.NewPetService(petRepo, db)
 	checkInService := services.NewCheckInService(checkInRepo, petService)
+	sleepScheduleService := services.NewSleepScheduleService(sleepScheduleRepo)
+	groupService := services.NewGroupService(groupRepo)
+	decorationService := services.NewDecorationService(decorationRepo, petRepo)
+	messageService := services.NewMessageService(messageRepo, userRepo)
 
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService)
 	checkInHandler := handlers.NewCheckInHandler(checkInService)
 	petHandler := handlers.NewPetHandler(petService)
+	sleepScheduleHandler := handlers.NewSleepScheduleHandler(sleepScheduleService)
+	userHandler := handlers.NewUserHandler(userRepo)
+	groupHandler := handlers.NewGroupHandler(groupService)
+	decorationHandler := handlers.NewDecorationHandler(decorationService)
+	messageHandler := handlers.NewMessageHandler(messageService)
 
 	// API v1 routes
 	v1 := router.Group("/api/v1")
@@ -61,11 +74,13 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, redis *redis.Client) {
 			// User routes
 			users := protected.Group("/users")
 			{
-				users.GET("/me", func(c *gin.Context) {
-					userID, _ := middlewares.GetUserID(c)
-					c.JSON(200, gin.H{"message": "Get current user", "user_id": userID})
-				})
+				users.GET("/me", userHandler.GetProfile)
+				users.PUT("/me", userHandler.UpdateProfile)
 			}
+
+			// Sleep schedule routes
+			protected.GET("/sleep-schedule", sleepScheduleHandler.Get)
+			protected.PUT("/sleep-schedule", sleepScheduleHandler.Update)
 
 			// Check-in routes
 			checkins := protected.Group("/check-ins")
@@ -83,6 +98,42 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, redis *redis.Client) {
 				pet.PUT("/", petHandler.Update)
 				pet.GET("/decorations", petHandler.GetDecorations)
 				pet.POST("/decorations/:id/equip", petHandler.EquipDecoration)
+			}
+
+			// Group routes
+			groups := protected.Group("/groups")
+			{
+				groups.POST("/", groupHandler.Create)
+				groups.GET("/", groupHandler.List)
+				groups.GET("/my", groupHandler.GetUserGroups)
+				groups.POST("/join", groupHandler.Join)
+				groups.GET("/:id", groupHandler.Get)
+				groups.PUT("/:id", groupHandler.Update)
+				groups.DELETE("/:id", groupHandler.Delete)
+				groups.POST("/:id/leave", groupHandler.Leave)
+				groups.GET("/:id/members", groupHandler.GetMembers)
+				groups.DELETE("/:id/members/:userId", groupHandler.RemoveMember)
+			}
+
+			// Decoration routes
+			decorations := protected.Group("/decorations")
+			{
+				decorations.GET("/", decorationHandler.ListDecorations)
+				decorations.GET("/my", decorationHandler.GetUserDecorations)
+				decorations.POST("/unlock", decorationHandler.UnlockDecoration)
+				decorations.POST("/:id/equip", decorationHandler.EquipDecoration)
+			}
+
+			// Message routes
+			messages := protected.Group("/messages")
+			{
+				messages.POST("/", messageHandler.SendMessage)
+				messages.GET("/", messageHandler.GetMessages)
+				messages.GET("/unread-count", messageHandler.GetUnreadCount)
+				messages.GET("/conversation/:userId", messageHandler.GetConversation)
+				messages.POST("/conversation/:userId/read", messageHandler.MarkConversationAsRead)
+				messages.POST("/:id/read", messageHandler.MarkAsRead)
+				messages.DELETE("/:id", messageHandler.DeleteMessage)
 			}
 		}
 	}

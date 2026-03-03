@@ -13,7 +13,7 @@ type PetService interface {
 	GetOrCreatePet(userID uuid.UUID) (*dto.PetResponse, error)
 	UpdatePet(userID uuid.UUID, req *dto.UpdatePetRequest) (*dto.PetResponse, error)
 	AddExperience(userID uuid.UUID, points int) (*dto.PetResponse, error)
-	GetDecorations(userID uuid.UUID) ([]*dto.DecorationResponse, error)
+	GetDecorations(userID uuid.UUID) ([]*dto.PetDecorationResponse, error)
 	EquipDecoration(userID uuid.UUID, decorationID uuid.UUID) error
 }
 
@@ -113,12 +113,12 @@ func (s *petService) AddExperience(userID uuid.UUID, points int) (*dto.PetRespon
 	return s.petToResponse(pet), nil
 }
 
-func (s *petService) GetDecorations(userID uuid.UUID) ([]*dto.DecorationResponse, error) {
+func (s *petService) GetDecorations(userID uuid.UUID) ([]*dto.PetDecorationResponse, error) {
 	// Get pet to check level
 	pet, err := s.petRepo.FindByUserID(userID)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return []*dto.DecorationResponse{}, nil
+			return []*dto.PetDecorationResponse{}, nil
 		}
 		return nil, errors.ErrInternalServer
 	}
@@ -146,11 +146,11 @@ func (s *petService) GetDecorations(userID uuid.UUID) ([]*dto.DecorationResponse
 	}
 
 	// Convert to response DTOs
-	responses := make([]*dto.DecorationResponse, 0)
+	responses := make([]*dto.PetDecorationResponse, 0)
 	for _, decoration := range decorations {
 		// Only show decorations that are unlocked or owned
 		if decoration.UnlockLevel <= pet.Level || ownedMap[decoration.ID] {
-			responses = append(responses, &dto.DecorationResponse{
+			responses = append(responses, &dto.PetDecorationResponse{
 				ID:          decoration.ID.String(),
 				Name:        decoration.Name,
 				Description: decoration.Description,

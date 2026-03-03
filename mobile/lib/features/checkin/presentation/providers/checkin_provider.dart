@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/network/dio_client.dart';
 import '../../../checkin/data/models/checkin_models.dart';
 import '../../../checkin/data/services/checkin_service.dart';
 
@@ -117,5 +118,6 @@ class CheckInNotifier extends StateNotifier<CheckInState> {
 
 // Check-in provider
 final checkInProvider = StateNotifierProvider<CheckInNotifier, CheckInState>((ref) {
-  return CheckInNotifier(CheckInService());
+  final dioClient = ref.watch(dioClientProvider);
+  return CheckInNotifier(CheckInService(dioClient));
 });

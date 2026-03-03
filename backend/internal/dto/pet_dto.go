@@ -25,7 +25,7 @@ type PetResponse struct {
 	UpdatedAt         time.Time `json:"updated_at"`
 }
 
-type DecorationResponse struct {
+type PetDecorationResponse struct {
 	ID           string    `json:"id"`
 	Name         string    `json:"name"`
 	Description  string    `json:"description"`

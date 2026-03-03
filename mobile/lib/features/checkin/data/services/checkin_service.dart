@@ -1,22 +1,12 @@
 import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
+import '../../../../core/network/dio_client.dart';
 import '../models/checkin_models.dart';
 
 class CheckInService {
-  late final Dio _dio;
+  final Dio _dio;
 
-  CheckInService() {
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: ApiConstants.baseUrl,
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      ),
-    );
-  }
+  CheckInService(DioClient dioClient) : _dio = dioClient.dio;
 
   Future<CheckIn> createCheckIn(CheckInRequest request) async {
     try {

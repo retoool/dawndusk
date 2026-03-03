@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/network/dio_client.dart';
 import '../../../pet/data/models/pet_models.dart';
 import '../../../pet/data/services/pet_service.dart';
 
@@ -93,5 +94,6 @@ class PetNotifier extends StateNotifier<PetState> {
 
 // Pet provider
 final petProvider = StateNotifierProvider<PetNotifier, PetState>((ref) {
-  return PetNotifier(PetService());
+  final dioClient = ref.watch(dioClientProvider);
+  return PetNotifier(PetService(dioClient));
 });

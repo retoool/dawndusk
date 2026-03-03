@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../checkin/presentation/screens/checkin_screen.dart';
 import '../../../pet/presentation/screens/pet_screen.dart';
 import '../../../checkin/presentation/providers/checkin_provider.dart';
@@ -482,7 +483,7 @@ class _ProfileTab extends ConsumerWidget {
                   title: const Text('设置'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    // TODO: Navigate to settings
+                    context.push('/settings');
                   },
                 ),
                 const Divider(height: 1),

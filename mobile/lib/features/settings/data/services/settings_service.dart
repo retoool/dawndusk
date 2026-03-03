@@ -1,47 +1,50 @@
 import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/dio_client.dart';
-import '../models/pet_models.dart';
+import '../models/settings_models.dart';
 
-class PetService {
+class SettingsService {
   final Dio _dio;
 
-  PetService(DioClient dioClient) : _dio = dioClient.dio;
+  SettingsService(DioClient dioClient) : _dio = dioClient.dio;
 
-  Future<Pet> getPet() async {
+  Future<SleepSchedule> getSleepSchedule() async {
     try {
-      final response = await _dio.get(ApiConstants.pet);
-      return Pet.fromJson(response.data);
+      final response = await _dio.get(ApiConstants.sleepSchedule);
+      return SleepSchedule.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleError(e);
     }
   }
 
-  Future<Pet> updatePet(String name) async {
+  Future<SleepSchedule> updateSleepSchedule(SleepScheduleRequest request) async {
     try {
       final response = await _dio.put(
-        ApiConstants.pet,
-        data: UpdatePetRequest(name: name).toJson(),
+        ApiConstants.sleepSchedule,
+        data: request.toJson(),
       );
-      return Pet.fromJson(response.data);
+      return SleepSchedule.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleError(e);
     }
   }
 
-  Future<List<Decoration>> getDecorations() async {
+  Future<UserProfile> getUserProfile() async {
     try {
-      final response = await _dio.get(ApiConstants.petDecorations);
-      final List<dynamic> data = response.data as List<dynamic>;
-      return data.map((json) => Decoration.fromJson(json as Map<String, dynamic>)).toList();
+      final response = await _dio.get(ApiConstants.userMe);
+      return UserProfile.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleError(e);
     }
   }
 
-  Future<void> equipDecoration(String decorationId) async {
+  Future<UserProfile> updateUserProfile(UpdateUserProfileRequest request) async {
     try {
-      await _dio.post('${ApiConstants.petDecorations}/$decorationId/equip');
+      final response = await _dio.put(
+        ApiConstants.userMe,
+        data: request.toJson(),
+      );
+      return UserProfile.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleError(e);
     }
