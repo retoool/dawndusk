@@ -479,6 +479,39 @@ class _ProfileTab extends ConsumerWidget {
             child: Column(
               children: [
                 ListTile(
+                  leading: const Icon(Icons.groups),
+                  title: const Text('我的群组'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    context.push('/groups');
+                  },
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.chat_bubble),
+                  title: const Text('消息'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    context.push('/messages');
+                  },
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.diamond),
+                  title: const Text('装饰品'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    context.push('/decorations');
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Card(
+            child: Column(
+              children: [
+                ListTile(
                   leading: const Icon(Icons.settings),
                   title: const Text('设置'),
                   trailing: const Icon(Icons.chevron_right),
